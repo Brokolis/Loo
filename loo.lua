@@ -1060,9 +1060,7 @@ local function hook (env, root)
       end
     end
     
-    name = fs.combine("", (name:gsub("%.", "/")))
-
-    local path = fs.combine(root, name)
+    local path = fs.combine(root, fs.combine("", (name:gsub("%.", "/"))))
     
     if fs.isDir(path) then
       for i, file in ipairs(fs.list(path)) do
@@ -1152,6 +1150,10 @@ loo.class "Array" : inherits "Enumerable" {
     end
   end;
 
+  len = function (self)
+    return #self.items
+  end;
+
   toTable = function (self)
     local tab = {}
 
@@ -1201,6 +1203,36 @@ loo.class "Array" : inherits "Enumerable" {
     end
 
     self.items[i] = v
+  end;
+}
+
+loo.class "String" {
+  static_split = function (self, str, del)
+    loo.expect(str, "string", nil, "string")
+    del = loo.expect(del, "string", ",", "delimiter")
+
+    return split(str, del)
+  end;
+
+  static_trimLeft = function (self, str, char)
+    loo.expect(str, "string", nil, "string")
+    char = loo.expect(char, "string", "%s", "trim character")
+
+    return str:gsub("^" .. char .. "+", "")
+  end;
+
+  static_trimRight = function (self, str, char)
+    loo.expect(str, "string", nil, "string")
+    char = loo.expect(char, "string", "%s", "trim character")
+
+    return str:gsub(char .. "+$", "")
+  end;
+
+  static_trim = function (self, str, char)
+    loo.expect(str, "string", nil, "string")
+    char = loo.expect(char, "string", "%s", "trim character")
+
+    return self.trimRight(self.trimLeft(str, char), char)
   end;
 }
 
